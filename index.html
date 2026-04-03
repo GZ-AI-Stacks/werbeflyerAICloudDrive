@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GZ-AI.-Stacks &mdash; AI.-Ready Cloud Drive Werbeflyer</title>
+<meta name="description" content="AI.-Ready Cloud Drive - Die private Cloud auf dem eigenen PC. Sicher, portabel, ohne laufende Kosten.">
+<meta name="theme-color" content="#00FFAA">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>
+@page{size:A4;margin:0}
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ═══ THEME VARIABLES ═══ */
+:root,[data-theme="dark"]{
+    --bg:#060814;--surface:rgba(14,18,40,.7);--card:rgba(14,18,40,.85);
+    --border:rgba(0,255,170,.12);--neon:#00FFAA;--cyan:#00B4FF;--purple:#8C00FF;--pink:#FF0080;
+    --text:#DCE6F0;--dim:#94a3b8;--heading:#fff;
+    --compare-old-bg:rgba(255,0,128,.08);--compare-old-border:rgba(255,0,128,.2);
+    --compare-new-bg:rgba(0,255,170,.06);--compare-new-border:rgba(0,255,170,.2);
+    --qr-bg:rgba(6,8,20,.8);--matrix-opacity:.06;--corner-opacity:1
+}
+[data-theme="light"]{
+    --bg:#f0f2f5;--surface:rgba(255,255,255,.85);--card:#fff;
+    --border:rgba(0,0,0,.1);--neon:#059669;--cyan:#0284c7;--purple:#7c3aed;--pink:#db2777;
+    --text:#334155;--dim:#64748b;--heading:#0f172a;
+    --compare-old-bg:rgba(219,39,119,.06);--compare-old-border:rgba(219,39,119,.2);
+    --compare-new-bg:rgba(5,150,105,.06);--compare-new-border:rgba(5,150,105,.2);
+    --qr-bg:#fff;--matrix-opacity:0;--corner-opacity:.4
+}
+
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;position:relative;min-height:100vh;transition:background .3s,color .3s}
+
+/* ═══ SKIP LINK ═══ */
+.skip-link{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--neon);color:var(--bg);padding:8px 20px;border-radius:0 0 8px 8px;font-weight:700;z-index:100000;text-decoration:none;font-size:14px}
+.skip-link:focus{top:0}
+
+/* ═══ TOOLBAR ═══ */
+.toolbar{position:fixed;top:16px;right:16px;z-index:9999;display:flex;gap:6px;align-items:center}
+.toolbar button{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--neon);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.toolbar button:hover{border-color:var(--neon);box-shadow:0 0 12px rgba(0,255,170,.15)}
+.toolbar button:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+
+/* ═══ MATRIX CANVAS ═══ */
+canvas#matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:var(--matrix-opacity);pointer-events:none}
+
+/* ═══ BOOT ANIMATION ═══ */
+#boot-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#060814;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Courier New',monospace;transition:opacity .8s}
+#boot-screen.fade-out{opacity:0;pointer-events:none}
+#boot-screen canvas{position:absolute;top:0;left:0;width:100%;height:100%;opacity:.08}
+#boot-lines{position:relative;z-index:1;max-width:500px;width:90%;color:#00FFAA;font-size:13px;line-height:1.8}
+#boot-lines div{opacity:0;transform:translateX(-10px);transition:opacity .3s,transform .3s}
+#boot-lines div.show{opacity:1;transform:translateX(0)}
+#boot-progress{position:relative;z-index:1;width:280px;height:4px;background:rgba(255,255,255,.06);border-radius:4px;margin-top:24px;overflow:hidden}
+#boot-progress-bar{width:0;height:100%;background:linear-gradient(90deg,#00FFAA,#00B4FF);border-radius:4px;transition:width .3s}
+#boot-brand{position:relative;z-index:1;margin-top:28px;font-size:28px;font-weight:900;opacity:0;transition:opacity .6s;background:linear-gradient(135deg,#00FFAA,#00B4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Segoe UI',sans-serif}
+
+/* ═══ MAIN CONTENT ═══ */
+.flyer{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 24px 32px;display:flex;flex-direction:column;gap:32px;opacity:0;transition:opacity .6s}
+.flyer.visible{opacity:1}
+
+/* ═══ DECORATIVE CORNERS ═══ */
+.corner{position:fixed;width:28px;height:28px;z-index:2;opacity:var(--corner-opacity);pointer-events:none}
+.corner-tl{top:12px;left:12px;border-top:2px solid rgba(0,255,170,.25);border-left:2px solid rgba(0,255,170,.25)}
+.corner-tr{top:12px;right:56px;border-top:2px solid rgba(0,180,255,.25);border-right:2px solid rgba(0,180,255,.25)}
+.corner-bl{bottom:12px;left:12px;border-bottom:2px solid rgba(140,0,255,.25);border-left:2px solid rgba(140,0,255,.25)}
+.corner-br{bottom:12px;right:12px;border-bottom:2px solid rgba(255,0,128,.25);border-right:2px solid rgba(255,0,128,.25)}
+
+/* ═══ HEADER ═══ */
+header{text-align:center}
+.top-badge{margin-bottom:12px}
+.top-badge span{display:inline-block;padding:4px 18px;border:1px solid var(--purple);border-radius:14px;font-size:10px;color:var(--purple);letter-spacing:2px;font-weight:700;text-transform:uppercase}
+header h1{font-size:clamp(32px,6vw,48px);font-weight:900;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;line-height:1.15}
+.brand-bar{width:180px;height:2px;margin:16px auto;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--purple),var(--pink));border-radius:2px}
+header .sub{font-size:clamp(14px,2.5vw,16px);color:var(--dim);max-width:520px;margin:0 auto;line-height:1.6}
+
+/* ═══ USP CARDS ═══ */
+.usps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.usp{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.usp:hover,.usp:focus-within{border-color:rgba(0,255,170,.3);box-shadow:0 0 20px rgba(0,255,170,.08)}
+.usp::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;border-radius:14px 14px 0 0}
+.usp:nth-child(1)::before{background:var(--neon)}
+.usp:nth-child(2)::before{background:var(--cyan)}
+.usp:nth-child(3)::before{background:var(--purple)}
+.usp [role="img"]{font-size:30px;margin-bottom:10px}
+.usp h3{font-size:15px;font-weight:700;color:var(--heading);margin-bottom:6px}
+.usp p{font-size:13px;color:var(--dim);line-height:1.5}
+
+/* ═══ FEATURES ═══ */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 32px;padding:0 8px}
+.feat{display:flex;align-items:center;gap:12px;padding:8px 0}
+.feat::before{content:'';width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--neon);box-shadow:0 0 8px rgba(0,255,170,.3)}
+.feat:nth-child(even)::before{background:var(--cyan);box-shadow:0 0 8px rgba(0,180,255,.3)}
+.feat span{font-size:14px;color:var(--text)}
+
+/* ═══ COST COMPARISON ═══ */
+.compare{display:flex;justify-content:center;gap:20px;align-items:center;flex-wrap:wrap}
+.compare-box{border-radius:14px;padding:20px 28px;text-align:center;min-width:180px}
+.compare-old{background:var(--compare-old-bg);border:1px solid var(--compare-old-border)}
+.compare-new{background:var(--compare-new-bg);border:1px solid var(--compare-new-border)}
+.compare-box .price{font-size:clamp(20px,4vw,26px);font-weight:800}
+.compare-old .price{color:var(--pink)}
+.compare-new .price{color:var(--neon)}
+.compare-box .label{font-size:11px;color:var(--dim);margin-top:4px}
+.compare-arrow{font-size:28px;color:var(--neon)}
+
+/* ═══ BOTTOM: QR + CONTACT ═══ */
+.bottom{display:flex;align-items:center;justify-content:center;gap:32px;padding:24px 0;border-top:1px solid var(--border);flex-wrap:wrap}
+.qr-box{text-align:center;flex-shrink:0}
+.qr-box img{width:140px;height:140px;border-radius:10px;border:2px solid rgba(0,255,170,.2);padding:8px;background:var(--qr-bg)}
+.qr-label{font-size:11px;color:var(--neon);margin-top:8px;font-weight:600;letter-spacing:.5px}
+.contact .name{font-size:18px;font-weight:800;color:var(--heading);margin-bottom:2px}
+.contact .role{font-size:11px;color:var(--neon);font-weight:600;letter-spacing:1px;margin-bottom:10px}
+.contact .info{font-size:13px;color:var(--dim);line-height:1.8}
+.contact .info a{color:var(--cyan);text-decoration:none}
+.contact .info a:hover{text-decoration:underline}
+.contact .info a:focus-visible{outline:2px solid var(--neon);outline-offset:2px;border-radius:2px}
+.contact .url{font-size:15px;font-weight:700;color:var(--neon);margin-top:10px;letter-spacing:.5px}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:600px){
+    .flyer{padding:32px 16px 24px;gap:24px}
+    .usps{grid-template-columns:1fr}
+    .features{grid-template-columns:1fr}
+    .compare{flex-direction:column;gap:12px}
+    .compare-arrow{transform:rotate(90deg)}
+    .bottom{flex-direction:column;text-align:center;gap:20px}
+    .contact{text-align:center}
+    .toolbar{top:8px;right:8px}
+}
+
+/* ═══ PRINT ═══ */
+@media print{
+    body{background:#060814!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    canvas,#boot-screen,.toolbar,.skip-link{display:none!important}
+    .flyer{opacity:1!important;max-width:none;padding:20mm 18mm}
+    .corner{position:absolute}
+}
+
+/* ═══ REDUCED MOTION ═══ */
+@media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    #boot-screen{display:none!important}
+    .flyer{opacity:1!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Skip Navigation -->
+<a href="#main-content" class="skip-link">Zum Inhalt springen</a>
+
+<!-- ═══════ TOOLBAR ═══════ -->
+<nav class="toolbar" role="toolbar" aria-label="Ansicht anpassen">
+    <button type="button" id="zoom-in" aria-label="Text vergr&ouml;&szlig;ern" title="Vergr&ouml;&szlig;ern">+</button>
+    <button type="button" id="zoom-out" aria-label="Text verkleinern" title="Verkleinern">&minus;</button>
+    <button type="button" id="theme-toggle" aria-label="Farbschema wechseln" title="Hell/Dunkel umschalten">&#9789;</button>
+</nav>
+
+<!-- ═══════ BOOT ANIMATION ═══════ -->
+<div id="boot-screen" role="status" aria-live="polite" aria-label="System wird geladen">
+    <canvas id="boot-matrix"></canvas>
+    <div id="boot-lines">
+        <div>> GZ-AI.-Stacks System v4.2 ...</div>
+        <div>> Initialisiere Sicherheitsmodule ...</div>
+        <div>> TLS 1.3 / AES-256 aktiv</div>
+        <div>> Cloud Drive Engine geladen</div>
+        <div>> 12 Sicherheitsebenen verifiziert</div>
+        <div>> Verbindung hergestellt</div>
+        <div>> Willkommen.</div>
+    </div>
+    <div id="boot-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Ladefortschritt"><div id="boot-progress-bar"></div></div>
+    <div id="boot-brand" aria-hidden="true">GZ-AI.-Stacks</div>
+</div>
+
+<!-- Matrix Background -->
+<canvas id="matrix" aria-hidden="true"></canvas>
+
+<!-- Decorative Corners -->
+<div class="corner corner-tl" aria-hidden="true"></div>
+<div class="corner corner-tr" aria-hidden="true"></div>
+<div class="corner corner-bl" aria-hidden="true"></div>
+<div class="corner corner-br" aria-hidden="true"></div>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<main id="main-content" class="flyer" role="main">
+
+    <!-- Header -->
+    <header>
+        <div class="top-badge" aria-hidden="true"><span>Software Made in Germany</span></div>
+        <h1>AI.-Ready<br>Cloud Drive</h1>
+        <div class="brand-bar" aria-hidden="true"></div>
+        <p class="sub">Die private Cloud auf dem eigenen PC &mdash; sicher, portabel und ohne laufende Kosten. Eine einzige 155&nbsp;KB Datei ersetzt teure Cloud-Abos.</p>
+    </header>
+
+    <!-- USP Cards -->
+    <section aria-label="Hauptvorteile">
+        <h2 class="sr-only">Hauptvorteile</h2>
+        <div class="usps" role="list">
+            <article class="usp" role="listitem">
+                <div role="img" aria-label="Schloss-Symbol">&#128274;</div>
+                <h3>100% Lokal &amp; DSGVO</h3>
+                <p>Ihre Daten verlassen niemals Ihren Rechner. Keine fremden Server, kein Tracking.</p>
+            </article>
+            <article class="usp" role="listitem">
+                <div role="img" aria-label="Blitz-Symbol">&#9889;</div>
+                <h3>30 Sekunden Setup</h3>
+                <p>Doppelklick und l&auml;uft. Keine Installation, kein IT-Wissen n&ouml;tig.</p>
+            </article>
+            <article class="usp" role="listitem">
+                <div role="img" aria-label="Schild-Symbol">&#128737;&#65039;</div>
+                <h3>12 Sicherheitsebenen</h3>
+                <p>TLS 1.3, AES-256, 2FA, USB Kill-Switch, Remote-Notfall-Button.</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section aria-label="Funktionen">
+        <h2 class="sr-only">Alle Funktionen</h2>
+        <div class="features" role="list">
+            <div class="feat" role="listitem"><span>Fernzugriff vom Handy, Tablet &amp; PC</span></div>
+            <div class="feat" role="listitem"><span>Cloud-Tresor mit Drag &amp; Drop Upload</span></div>
+            <div class="feat" role="listitem"><span>Video-, Audio- &amp; PDF-Streaming</span></div>
+            <div class="feat" role="listitem"><span>Voller PC-Systemzugriff aus der Ferne</span></div>
+            <div class="feat" role="listitem"><span>Pers&ouml;nliches Branding inklusive</span></div>
+            <div class="feat" role="listitem"><span>155 KB &mdash; passt auf jeden USB-Stick</span></div>
+            <div class="feat" role="listitem"><span>Live System-Dashboard (CPU, RAM)</span></div>
+            <div class="feat" role="listitem"><span>Steuerberater-taugliche Sicherheit</span></div>
+        </div>
+    </section>
+
+    <!-- Cost Comparison -->
+    <section aria-label="Kostenvergleich">
+        <h2 class="sr-only">Kostenvergleich</h2>
+        <div class="compare">
+            <div class="compare-box compare-old">
+                <div class="price" aria-label="Herkömmliche Kosten: 708 Euro pro Jahr">708 &euro; / Jahr</div>
+                <div class="label">TeamViewer + Dropbox</div>
+            </div>
+            <div class="compare-arrow" role="img" aria-label="wird ersetzt durch">&#10132;</div>
+            <div class="compare-box compare-new">
+                <div class="price" aria-label="AI.-Ready Cloud Drive: Null Euro Folgekosten">0 &euro; Folgekosten</div>
+                <div class="label">AI.-Ready Cloud Drive</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QR + Contact -->
+    <footer class="bottom">
+        <div class="qr-box">
+            <img src="qr-code-gz-ai-stacks.png" alt="QR-Code: Scannen um gz-ai-stacks.de zu &ouml;ffnen" width="140" height="140">
+            <div class="qr-label">Jetzt informieren</div>
+        </div>
+        <address class="contact">
+            <div class="name">Gerd Zimmermann</div>
+            <div class="role">CEO &amp; Developer &mdash; GZ-AI.-Stacks</div>
+            <div class="info">
+                <span aria-label="E-Mail">&#128231;</span> <a href="mailto:gz.ai.stacks@gmail.com">gz.ai.stacks@gmail.com</a><br>
+                <span aria-label="Webseite">&#127760;</span> <a href="https://gz-ai-stacks.de">gz-ai-stacks.de</a>
+            </div>
+            <div class="url" aria-hidden="true">www.gz-ai-stacks.de</div>
+        </address>
+    </footer>
+
+</main>
+
+<!-- ═══ SR-ONLY HELPER ═══ -->
+<style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}</style>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+/* ═══ SERVICE WORKER ═══ */
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){})}
+
+/* ═══ BOOT ANIMATION ═══ */
+(function(){
+    var boot=document.getElementById('boot-screen');
+    var lines=document.querySelectorAll('#boot-lines div');
+    var bar=document.getElementById('boot-progress-bar');
+    var prog=document.getElementById('boot-progress');
+    var brand=document.getElementById('boot-brand');
+    var flyer=document.querySelector('.flyer');
+    var mc=document.getElementById('boot-matrix');
+
+    // Boot matrix
+    var bctx=mc.getContext('2d');
+    mc.width=window.innerWidth;mc.height=window.innerHeight;
+    var bcols=Math.floor(mc.width/16),bdrops=[];
+    for(var i=0;i<bcols;i++)bdrops[i]=Math.random()*mc.height/16;
+    var bchars='01GZAISTACKSBOOT';
+    var bint=setInterval(function(){
+        bctx.fillStyle='rgba(6,8,20,.07)';bctx.fillRect(0,0,mc.width,mc.height);
+        bctx.fillStyle='#00FFAA';bctx.font='13px monospace';
+        for(var i=0;i<bdrops.length;i++){
+            bctx.fillText(bchars[Math.floor(Math.random()*bchars.length)],i*16,bdrops[i]*16);
+            if(bdrops[i]*16>mc.height&&Math.random()>.975)bdrops[i]=0;
+            bdrops[i]++;
+        }
+    },50);
+
+    var delay=0;
+    lines.forEach(function(line,idx){
+        delay+=350+Math.random()*200;
+        setTimeout(function(){
+            line.classList.add('show');
+            var pct=Math.min(100,Math.round((idx+1)/lines.length*90));
+            bar.style.width=pct+'%';
+            prog.setAttribute('aria-valuenow',pct);
+        },delay);
+    });
+
+    setTimeout(function(){
+        bar.style.width='100%';prog.setAttribute('aria-valuenow','100');
+        brand.style.opacity='1';
+    },delay+400);
+
+    setTimeout(function(){
+        boot.classList.add('fade-out');
+        flyer.classList.add('visible');
+        setTimeout(function(){boot.style.display='none';clearInterval(bint)},800);
+    },delay+1400);
+})();
+
+/* ═══ MATRIX RAIN ═══ */
+(function(){
+    var c=document.getElementById('matrix'),x=c.getContext('2d');
+    function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+    resize();window.addEventListener('resize',resize);
+    var cols=Math.floor(c.width/16),drops=[];
+    for(var i=0;i<cols;i++)drops[i]=Math.random()*c.height/16;
+    var chars='01AICLOUDDRIVEREADY';
+    function draw(){
+        x.fillStyle='rgba(6,8,20,.06)';x.fillRect(0,0,c.width,c.height);
+        x.fillStyle='#00FFAA';x.font='13px monospace';
+        for(var i=0;i<drops.length;i++){
+            x.fillText(chars[Math.floor(Math.random()*chars.length)],i*16,drops[i]*16);
+            if(drops[i]*16>c.height&&Math.random()>.975)drops[i]=0;
+            drops[i]++;
+        }
+    }
+    setInterval(draw,55);
+})();
+
+/* ═══ ZOOM ═══ */
+(function(){
+    var size=100;
+    document.getElementById('zoom-in').addEventListener('click',function(){
+        size=Math.min(160,size+10);
+        document.documentElement.style.fontSize=size+'%';
+        this.setAttribute('aria-label','Text vergr\u00f6\u00dfern (aktuell '+size+'%)');
+    });
+    document.getElementById('zoom-out').addEventListener('click',function(){
+        size=Math.max(60,size-10);
+        document.documentElement.style.fontSize=size+'%';
+        this.setAttribute('aria-label','Text verkleinern (aktuell '+size+'%)');
+    });
+})();
+
+/* ═══ THEME TOGGLE ═══ */
+(function(){
+    var btn=document.getElementById('theme-toggle');
+    var html=document.documentElement;
+    // Check system preference
+    if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches){
+        html.setAttribute('data-theme','light');
+        btn.textContent='\u2600';
+    }
+    btn.addEventListener('click',function(){
+        var isDark=html.getAttribute('data-theme')==='dark';
+        html.setAttribute('data-theme',isDark?'light':'dark');
+        btn.textContent=isDark?'\u2600':'\u263D';
+        btn.setAttribute('aria-label',isDark?'Zum Dunkelmodus wechseln':'Zum Hellmodus wechseln');
+    });
+})();
+</script>
+
+</body>
+</html>
