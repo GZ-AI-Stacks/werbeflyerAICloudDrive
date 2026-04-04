@@ -91,6 +91,10 @@ header .sub{font-size:clamp(14px,2.5vw,16px);color:var(--dim);max-width:520px;ma
 .usp h3{font-size:15px;font-weight:700;color:var(--heading);margin-bottom:6px}
 .usp p{font-size:13px;color:var(--dim);line-height:1.5}
 
+/* ═══ VIDEO ═══ */
+.video-wrap{position:relative;width:100%;max-width:800px;margin:0 auto;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:14px;border:1px solid var(--border);box-shadow:0 0 30px rgba(0,255,170,.08)}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:14px}
+
 /* ═══ FEATURES ═══ */
 .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 32px;padding:0 8px}
 .feat{display:flex;align-items:center;gap:12px;padding:8px 0}
@@ -197,6 +201,14 @@ header .sub{font-size:clamp(14px,2.5vw,16px);color:var(--dim);max-width:520px;ma
         <div class="brand-bar" aria-hidden="true"></div>
         <p class="sub">6 portable Desktop-Tools im Cyberpunk-Design &mdash; kein Installer, kein Abo, kein Risiko. Einfach starten und arbeiten.</p>
     </header>
+
+    <!-- Video -->
+    <section aria-label="Werbevideo">
+        <h2 class="sr-only">Werbevideo</h2>
+        <div class="video-wrap">
+            <iframe src="https://www.youtube.com/embed/8_Ynj6HPScE" title="AI.-Ready Cloud Drive v4.0 — Dein portabler KI-Arbeitsplatz f&uuml;r Windows" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+        </div>
+    </section>
 
     <!-- USP Cards -->
     <section aria-label="Hauptvorteile">
