@@ -92,8 +92,11 @@ header .sub{font-size:clamp(14px,2.5vw,16px);color:var(--dim);max-width:520px;ma
 .usp p{font-size:13px;color:var(--dim);line-height:1.5}
 
 /* ═══ VIDEO ═══ */
-.video-wrap{position:relative;width:100%;max-width:800px;margin:0 auto;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:14px;border:1px solid var(--border);box-shadow:0 0 30px rgba(0,255,170,.08)}
-.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:14px}
+.video-wrap{width:100%;max-width:800px;margin:0 auto;border-radius:14px;border:1px solid var(--border);box-shadow:0 0 30px rgba(0,255,170,.08);overflow:hidden}
+.video-wrap video{width:100%;display:block;border-radius:14px}
+.audio-wrap{width:100%;max-width:800px;margin:24px auto 0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px}
+.audio-wrap p{font-size:13px;color:var(--dim);margin-bottom:10px}
+.audio-wrap audio{width:100%;border-radius:8px}
 
 /* ═══ FEATURES ═══ */
 .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 32px;padding:0 8px}
@@ -206,7 +209,23 @@ header .sub{font-size:clamp(14px,2.5vw,16px);color:var(--dim);max-width:520px;ma
     <section aria-label="Werbevideo">
         <h2 class="sr-only">Werbevideo</h2>
         <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/8_Ynj6HPScE" title="AI.-Ready Cloud Drive v4.0 — Dein portabler KI-Arbeitsplatz f&uuml;r Windows" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+            <video controls preload="metadata">
+                <source src="Videos/AI.-Ready Cloud Drive Produktdemo (V2 - Preisupdate)_1080p_caption.mp4" type="video/mp4">
+                Ihr Browser unterst&uuml;tzt kein Video.
+            </video>
+        </div>
+        <div class="video-wrap" style="margin-top:16px">
+            <video controls preload="metadata">
+                <source src="Videos/AI.mp4" type="video/mp4">
+                Ihr Browser unterst&uuml;tzt kein Video.
+            </video>
+        </div>
+        <div class="audio-wrap">
+            <p>&#127911; <strong>Podcast:</strong> 750 Kilobyte beenden die teure Abo-Falle</p>
+            <audio controls preload="metadata">
+                <source src="Podcast/750_Kilobyte_beenden_die_teure_Abo-Falle.m4a" type="audio/mp4">
+                Ihr Browser unterst&uuml;tzt kein Audio.
+            </audio>
         </div>
     </section>
 
