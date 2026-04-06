@@ -1,412 +1,808 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="dark">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GZ-AI.-Stacks &mdash; AI.-Ready Windows Suite Werbeflyer</title>
-<meta name="description" content="AI.-Ready Windows Suite - 6 portable Desktop-Tools im Cyberpunk-Design. Kein Installer, kein Abo.">
-<meta name="theme-color" content="#00FFAA">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>AI.-Ready Cloud Drive v5.0 &mdash; GZ-AI.-Stacks</title>
 <style>
-@page{size:A4;margin:0}
+:root{--bg:#060814;--surface:#0A0E24;--card:#0E1228;--border:rgba(0,255,170,.15);--neon:#00FFAA;--cyan:#00B4FF;--purple:#8C00FF;--pink:#FF0080;--orange:#FF8C00;--text:#DCE6F0;--dim:#6a7f99;--glow:0 0 20px rgba(0,255,170,.15)}
 *{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
 
-/* ═══ THEME VARIABLES ═══ */
-:root,[data-theme="dark"]{
-    --bg:#060814;--surface:rgba(14,18,40,.7);--card:rgba(14,18,40,.85);
-    --border:rgba(0,255,170,.12);--neon:#00FFAA;--cyan:#00B4FF;--purple:#8C00FF;--pink:#FF0080;
-    --text:#DCE6F0;--dim:#94a3b8;--heading:#fff;
-    --compare-old-bg:rgba(255,0,128,.08);--compare-old-border:rgba(255,0,128,.2);
-    --compare-new-bg:rgba(0,255,170,.06);--compare-new-border:rgba(0,255,170,.2);
-    --qr-bg:rgba(6,8,20,.8);--matrix-opacity:.06;--corner-opacity:1
-}
-[data-theme="light"]{
-    --bg:#f0f2f5;--surface:rgba(255,255,255,.85);--card:#fff;
-    --border:rgba(0,0,0,.1);--neon:#059669;--cyan:#0284c7;--purple:#7c3aed;--pink:#db2777;
-    --text:#334155;--dim:#64748b;--heading:#0f172a;
-    --compare-old-bg:rgba(219,39,119,.06);--compare-old-border:rgba(219,39,119,.2);
-    --compare-new-bg:rgba(5,150,105,.06);--compare-new-border:rgba(5,150,105,.2);
-    --qr-bg:#fff;--matrix-opacity:0;--corner-opacity:.4
-}
+/* Matrix Rain Canvas */
+#matrix-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.06;pointer-events:none}
 
-html{scroll-behavior:smooth;font-size:16px}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;position:relative;min-height:100vh;transition:background .3s,color .3s}
-
-/* ═══ SKIP LINK ═══ */
-.skip-link{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--neon);color:var(--bg);padding:8px 20px;border-radius:0 0 8px 8px;font-weight:700;z-index:100000;text-decoration:none;font-size:14px}
-.skip-link:focus{top:0}
-
-/* ═══ TOOLBAR ═══ */
-.toolbar{position:fixed;top:16px;right:16px;z-index:9999;display:flex;gap:6px;align-items:center}
-.toolbar button{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--neon);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.toolbar button:hover{border-color:var(--neon);box-shadow:0 0 12px rgba(0,255,170,.15)}
-.toolbar button:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
-
-/* ═══ MATRIX CANVAS ═══ */
-canvas#matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:var(--matrix-opacity);pointer-events:none}
-
-/* ═══ BOOT ANIMATION ═══ */
-#boot-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#060814;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Courier New',monospace;transition:opacity .8s}
-#boot-screen.fade-out{opacity:0;pointer-events:none}
-#boot-screen canvas{position:absolute;top:0;left:0;width:100%;height:100%;opacity:.08}
-#boot-lines{position:relative;z-index:1;max-width:500px;width:90%;color:#00FFAA;font-size:13px;line-height:1.8}
-#boot-lines div{opacity:0;transform:translateX(-10px);transition:opacity .3s,transform .3s}
-#boot-lines div.show{opacity:1;transform:translateX(0)}
-#boot-progress{position:relative;z-index:1;width:280px;height:4px;background:rgba(255,255,255,.06);border-radius:4px;margin-top:24px;overflow:hidden}
-#boot-progress-bar{width:0;height:100%;background:linear-gradient(90deg,#00FFAA,#00B4FF);border-radius:4px;transition:width .3s}
-#boot-brand{position:relative;z-index:1;margin-top:28px;font-size:28px;font-weight:900;opacity:0;transition:opacity .6s;background:linear-gradient(135deg,#00FFAA,#00B4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Segoe UI',sans-serif}
-
-/* ═══ MAIN CONTENT ═══ */
-.flyer{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 24px 32px;display:flex;flex-direction:column;gap:32px;opacity:0;transition:opacity .6s}
-.flyer.visible{opacity:1}
-
-/* ═══ DECORATIVE CORNERS ═══ */
-.corner{position:fixed;width:28px;height:28px;z-index:2;opacity:var(--corner-opacity);pointer-events:none}
-.corner-tl{top:12px;left:12px;border-top:2px solid rgba(0,255,170,.25);border-left:2px solid rgba(0,255,170,.25)}
-.corner-tr{top:12px;right:56px;border-top:2px solid rgba(0,180,255,.25);border-right:2px solid rgba(0,180,255,.25)}
-.corner-bl{bottom:12px;left:12px;border-bottom:2px solid rgba(140,0,255,.25);border-left:2px solid rgba(140,0,255,.25)}
-.corner-br{bottom:12px;right:12px;border-bottom:2px solid rgba(255,0,128,.25);border-right:2px solid rgba(255,0,128,.25)}
+.container{max-width:1000px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
 
 /* ═══ HEADER ═══ */
-header{text-align:center}
-.top-badge{margin-bottom:12px}
-.top-badge span{display:inline-block;padding:4px 18px;border:1px solid var(--purple);border-radius:14px;font-size:10px;color:var(--purple);letter-spacing:2px;font-weight:700;text-transform:uppercase}
-header h1{font-size:clamp(32px,6vw,48px);font-weight:900;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;line-height:1.15}
-.brand-bar{width:180px;height:2px;margin:16px auto;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--purple),var(--pink));border-radius:2px}
-header .sub{font-size:clamp(14px,2.5vw,16px);color:var(--dim);max-width:520px;margin:0 auto;line-height:1.6}
+header{text-align:center;padding:60px 0 40px;position:relative;z-index:1}
+.brand{font-size:11px;letter-spacing:4px;color:var(--purple);text-transform:uppercase;font-weight:700;margin-bottom:12px}
+.brand-bar{width:200px;height:2px;margin:0 auto 20px;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--purple),var(--pink));border-radius:2px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:800;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.subtitle{font-size:clamp(14px,2.5vw,18px);color:var(--dim);max-width:650px;margin:0 auto}
 
-/* ═══ USP CARDS ═══ */
-.usps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.usp{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s}
-.usp:hover,.usp:focus-within{border-color:rgba(0,255,170,.3);box-shadow:0 0 20px rgba(0,255,170,.08)}
-.usp::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;border-radius:14px 14px 0 0}
-.usp:nth-child(1)::before{background:var(--neon)}
-.usp:nth-child(2)::before{background:var(--cyan)}
-.usp:nth-child(3)::before{background:var(--purple)}
-.usp [role="img"]{font-size:30px;margin-bottom:10px}
-.usp h3{font-size:15px;font-weight:700;color:var(--heading);margin-bottom:6px}
-.usp p{font-size:13px;color:var(--dim);line-height:1.5}
+/* ═══ SECTIONS ═══ */
+section{margin-bottom:48px}
+.section-title{font-size:clamp(18px,3vw,24px);font-weight:700;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border);text-align:center}
 
-/* ═══ VIDEO ═══ */
-.video-wrap{width:100%;max-width:800px;margin:0 auto;border-radius:14px;border:1px solid var(--border);box-shadow:0 0 30px rgba(0,255,170,.08);overflow:hidden}
-.video-wrap video{width:100%;display:block;border-radius:14px}
-.audio-wrap{width:100%;max-width:800px;margin:24px auto 0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px}
-.audio-wrap p{font-size:13px;color:var(--dim);margin-bottom:10px}
-.audio-wrap audio{width:100%;border-radius:8px}
+/* ═══ HERO VIDEO ═══ */
+.hero-video{border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:0 0 40px rgba(0,255,170,.08);margin-bottom:48px}
+.hero-video video{width:100%;display:block;background:#000}
 
-/* ═══ FEATURES ═══ */
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 32px;padding:0 8px}
-.feat{display:flex;align-items:center;gap:12px;padding:8px 0}
-.feat::before{content:'';width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--neon);box-shadow:0 0 8px rgba(0,255,170,.3)}
-.feat:nth-child(even)::before{background:var(--cyan);box-shadow:0 0 8px rgba(0,180,255,.3)}
-.feat span{font-size:14px;color:var(--text)}
+/* ═══ INFOGRAPHIC ═══ */
+.infographic{border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:0 0 30px rgba(0,255,170,.06);cursor:pointer;transition:border-color .3s}
+.infographic:hover{border-color:rgba(0,255,170,.4)}
+.infographic img{width:100%;display:block}
+.infographic-hint{text-align:center;font-size:12px;color:var(--dim);margin-top:8px}
 
-/* ═══ COST COMPARISON ═══ */
-.compare{display:flex;justify-content:center;gap:20px;align-items:center;flex-wrap:wrap}
-.compare-box{border-radius:14px;padding:20px 28px;text-align:center;min-width:180px}
-.compare-old{background:var(--compare-old-bg);border:1px solid var(--compare-old-border)}
-.compare-new{background:var(--compare-new-bg);border:1px solid var(--compare-new-border)}
-.compare-box .price{font-size:clamp(20px,4vw,26px);font-weight:800}
-.compare-old .price{color:var(--pink)}
-.compare-new .price{color:var(--neon)}
-.compare-box .label{font-size:11px;color:var(--dim);margin-top:4px}
-.compare-arrow{font-size:28px;color:var(--neon)}
+/* ═══ VORTEILE GRID ═══ */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.card{background:linear-gradient(135deg,var(--surface),var(--card));border:1px solid var(--border);border-radius:14px;padding:28px 24px;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.card:hover{border-color:rgba(0,255,170,.35);box-shadow:var(--glow)}
+.card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px}
+.card:nth-child(1)::before{background:var(--neon)}
+.card:nth-child(2)::before{background:var(--cyan)}
+.card:nth-child(3)::before{background:var(--purple)}
+.card:nth-child(4)::before{background:var(--pink)}
+.card:nth-child(5)::before{background:var(--orange)}
+.card-icon{font-size:28px;margin-bottom:10px}
+.card h3{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px}
+.card p{font-size:14px;color:var(--dim);line-height:1.6}
 
-/* ═══ BOTTOM: QR + CONTACT ═══ */
-.bottom{display:flex;align-items:center;justify-content:center;gap:32px;padding:24px 0;border-top:1px solid var(--border);flex-wrap:wrap}
-.qr-box{text-align:center;flex-shrink:0}
-.qr-box img{width:140px;height:140px;border-radius:10px;border:2px solid rgba(0,255,170,.2);padding:8px;background:var(--qr-bg)}
-.qr-label{font-size:11px;color:var(--neon);margin-top:8px;font-weight:600;letter-spacing:.5px}
-.contact .name{font-size:18px;font-weight:800;color:var(--heading);margin-bottom:2px}
-.contact .role{font-size:11px;color:var(--neon);font-weight:600;letter-spacing:1px;margin-bottom:10px}
-.contact .info{font-size:13px;color:var(--dim);line-height:1.8}
-.contact .info a{color:var(--cyan);text-decoration:none}
-.contact .info a:hover{text-decoration:underline}
-.contact .info a:focus-visible{outline:2px solid var(--neon);outline-offset:2px;border-radius:2px}
-.contact .url{font-size:15px;font-weight:700;color:var(--neon);margin-top:10px;letter-spacing:.5px}
+/* ═══ SICHERHEIT ═══ */
+.security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.sec-item{background:rgba(255,0,128,.04);border:1px solid rgba(255,0,128,.12);border-radius:12px;padding:20px;text-align:center;transition:border-color .3s}
+.sec-item:hover{border-color:rgba(255,0,128,.35)}
+.sec-icon{font-size:32px;margin-bottom:8px}
+.sec-item h4{font-size:14px;color:var(--pink);font-weight:700;margin-bottom:4px}
+.sec-item p{font-size:12px;color:var(--dim)}
+
+/* ═══ KOSTENVERGLEICH ═══ */
+.cost-table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden}
+.cost-table th,.cost-table td{padding:14px 20px;text-align:left;font-size:14px}
+.cost-table thead th{background:rgba(0,255,170,.08);color:var(--neon);font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.cost-table tbody td{border-bottom:1px solid rgba(255,255,255,.04);color:var(--text)}
+.cost-table tbody tr:hover{background:rgba(0,255,170,.03)}
+.cost-table .price-old{color:var(--pink);font-weight:600}
+.cost-table .price-new{color:var(--neon);font-weight:700}
+.cost-total{background:rgba(0,255,170,.06)!important}
+.cost-total td{font-weight:700;font-size:15px!important;border-top:2px solid var(--border)!important}
+.save-badge{display:inline-block;background:rgba(0,255,170,.12);color:var(--neon);font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;margin-top:12px}
+
+/* ═══ TECH SPECS ═══ */
+.specs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.spec{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.spec-val{font-size:20px;font-weight:800;color:var(--cyan);margin-bottom:2px}
+.spec-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+
+/* ═══ AUDIO PLAYER ═══ */
+.audio-section{background:linear-gradient(135deg,var(--surface),var(--card));border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center}
+.audio-section h3{color:#fff;font-size:18px;margin-bottom:6px}
+.audio-section p{color:var(--dim);font-size:13px;margin-bottom:16px}
+.audio-section audio{width:100%;max-width:600px;border-radius:8px}
+
+/* ═══ CTA ═══ */
+.cta{text-align:center;padding:40px 0;margin-bottom:20px}
+.cta-box{background:linear-gradient(135deg,rgba(0,255,170,.06),rgba(0,180,255,.06));border:1px solid var(--border);border-radius:16px;padding:40px 32px;box-shadow:var(--glow)}
+.cta-box h2{font-size:22px;color:#fff;margin-bottom:8px}
+.cta-box p{color:var(--dim);font-size:15px;margin-bottom:20px}
+.cta-mail{display:inline-block;padding:14px 36px;background:linear-gradient(135deg,var(--neon),var(--cyan));color:var(--bg);font-weight:700;font-size:15px;text-decoration:none;border-radius:10px;transition:transform .2s,box-shadow .2s}
+.cta-mail:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,170,.25)}
+
+/* ═══ FOOTER ═══ */
+footer{text-align:center;padding:32px 0;border-top:1px solid var(--border);font-size:12px;color:var(--dim)}
+footer .brand-sm{color:var(--neon);font-weight:600;letter-spacing:1px}
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:600px){
-    .flyer{padding:32px 16px 24px;gap:24px}
-    .usps{grid-template-columns:1fr}
-    .features{grid-template-columns:1fr}
-    .compare{flex-direction:column;gap:12px}
-    .compare-arrow{transform:rotate(90deg)}
-    .bottom{flex-direction:column;text-align:center;gap:20px}
-    .contact{text-align:center}
-    .toolbar{top:8px;right:8px}
+    header{padding:40px 0 28px}
+    .grid,.security-grid,.specs-grid{grid-template-columns:1fr}
+    .cost-table th,.cost-table td{padding:10px 12px;font-size:13px}
+    .audio-section{padding:24px 16px}
 }
-
 /* ═══ PRINT ═══ */
 @media print{
-    body{background:#060814!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    canvas,#boot-screen,.toolbar,.skip-link{display:none!important}
-    .flyer{opacity:1!important;max-width:none;padding:20mm 18mm}
-    .corner{position:absolute}
+    body{background:#fff;color:#222}
+    #matrix-bg{display:none}
+    .card,.sec-item,.spec,.audio-section,.cta-box{border:1px solid #999;break-inside:avoid}
+    h1,.section-title,.card h3{color:#111;-webkit-text-fill-color:#111}
+    .brand-bar{background:#333}
 }
-
-/* ═══ REDUCED MOTION ═══ */
-@media(prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-    #boot-screen{display:none!important}
-    .flyer{opacity:1!important}
+/* ═══ AUDIO VISUALIZER ═══ */
+#audio-vis-canvas{width:100%;height:280px;border-radius:14px;display:block;margin-bottom:16px;cursor:pointer}
+/* ═══ LIGHT MODE ═══ */
+@media(prefers-color-scheme:light){
+    :root{--bg:#f5f5f5;--surface:#fff;--card:#fff;--border:rgba(0,0,0,.1);--text:#333;--dim:#666}
+    h1,.section-title{-webkit-text-fill-color:unset;color:#111}
+    .card h3{color:#111}
+    #matrix-bg{display:none}
 }
+/* ═══ BOOT SPLASH SCREEN ═══ */
+#splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#060814;z-index:99999;display:flex;align-items:center;justify-content:center;transition:opacity .8s ease}
+#splash.fade-out{opacity:0;pointer-events:none}
+#splash canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
+#boot-box{position:relative;z-index:1;width:90%;max-width:520px;background:rgba(10,14,36,.9);border:1px solid rgba(0,255,170,.2);border-radius:16px;padding:36px 32px;box-shadow:0 0 60px rgba(0,255,170,.08);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#boot-brand{text-align:center;font-size:11px;letter-spacing:4px;color:var(--purple);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+#boot-title{text-align:center;font-size:24px;font-weight:800;background:linear-gradient(135deg,#00FFAA,#00B4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px}
+#boot-lines{font-family:'Consolas','Courier New',monospace;font-size:13px;color:#00FFAA;line-height:1.9;min-height:200px}
+#boot-lines div{opacity:0;transform:translateX(-8px);transition:opacity .3s,transform .3s}
+#boot-lines div.show{opacity:1;transform:translateX(0)}
+#boot-lines .dim{color:#647896}
+#boot-lines .ok{color:#00FFAA}
+#boot-lines .cyan{color:#00B4FF}
+#boot-lines .warn{color:#FF8C00}
+#boot-bar{width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:4px;margin-top:20px;overflow:hidden}
+#boot-bar-fill{width:0;height:100%;background:linear-gradient(90deg,#00FFAA,#00B4FF);border-radius:4px;transition:width .3s ease}
+#boot-status{text-align:center;font-size:11px;color:#647896;margin-top:10px;letter-spacing:1px;font-family:'Consolas',monospace}
 </style>
 </head>
 <body>
 
-<!-- Skip Navigation -->
-<a href="#main-content" class="skip-link">Zum Inhalt springen</a>
-
-<!-- ═══════ TOOLBAR ═══════ -->
-<nav class="toolbar" role="toolbar" aria-label="Ansicht anpassen">
-    <button type="button" id="zoom-in" aria-label="Text vergr&ouml;&szlig;ern" title="Vergr&ouml;&szlig;ern">+</button>
-    <button type="button" id="zoom-out" aria-label="Text verkleinern" title="Verkleinern">&minus;</button>
-    <button type="button" id="theme-toggle" aria-label="Farbschema wechseln" title="Hell/Dunkel umschalten">&#9789;</button>
-</nav>
-
-<!-- ═══════ BOOT ANIMATION ═══════ -->
-<div id="boot-screen" role="status" aria-live="polite" aria-label="System wird geladen">
-    <canvas id="boot-matrix"></canvas>
-    <div id="boot-lines">
-        <div>> GZ-AI.-Stacks System v4.2 ...</div>
-        <div>> Initialisiere Sicherheitsmodule ...</div>
-        <div>> TLS 1.3 / AES-256 aktiv</div>
-        <div>> Cloud Drive Engine geladen</div>
-        <div>> 12 Sicherheitsebenen verifiziert</div>
-        <div>> Verbindung hergestellt</div>
-        <div>> Willkommen.</div>
+<!-- ═══════ BOOT SPLASH SCREEN ═══════ -->
+<div id="splash">
+    <canvas id="splash-matrix"></canvas>
+    <div id="boot-box">
+        <div id="boot-brand">GZ-AI.-Stacks</div>
+        <div id="boot-title">AI.-Ready Cloud Drive</div>
+        <div id="boot-lines">
+            <div class="dim">> GZ-AI.-Stacks System v5.0</div>
+            <div class="dim">> Initialisiere Module ...</div>
+            <div class="ok">> Cloud Vault geladen</div>
+            <div class="ok">> HTTPS-Server bereit (TLS 1.3)</div>
+            <div class="cyan">> Cloudflare Tunnel aktiv</div>
+            <div class="ok">> 24 API-Endpoints registriert</div>
+            <div class="ok">> Sicherheitsprotokolle aktiv (12 Ebenen)</div>
+            <div class="ok">> 2FA / TOTP Modul geladen</div>
+            <div class="warn">> USB Kill-Switch: Watchdog bereit</div>
+            <div class="ok">> FLOW Board geladen</div>
+            <div class="ok">> Alle Systeme online</div>
+            <div class="cyan">> Willkommen bei AI.-Ready Cloud Drive v5.0.</div>
+        </div>
+        <div id="boot-bar"><div id="boot-bar-fill"></div></div>
+        <div id="boot-status">Lade Werbeseite ...</div>
     </div>
-    <div id="boot-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Ladefortschritt"><div id="boot-progress-bar"></div></div>
-    <div id="boot-brand" aria-hidden="true">GZ-AI.-Stacks</div>
 </div>
 
-<!-- Matrix Background -->
-<canvas id="matrix" aria-hidden="true"></canvas>
+<canvas id="matrix-bg"></canvas>
 
-<!-- Decorative Corners -->
-<div class="corner corner-tl" aria-hidden="true"></div>
-<div class="corner corner-tr" aria-hidden="true"></div>
-<div class="corner corner-bl" aria-hidden="true"></div>
-<div class="corner corner-br" aria-hidden="true"></div>
+<div class="container">
 
-<!-- ═══════ MAIN CONTENT ═══════ -->
-<main id="main-content" class="flyer" role="main">
+<!-- ═══════ HEADER ═══════ -->
+<header>
+    <div class="brand">GZ-AI.-Stacks</div>
+    <div class="brand-bar"></div>
+    <h1>AI.-Ready Cloud Drive</h1>
+    <div class="subtitle">Die private Cloud mit integriertem Whiteboard &mdash; sicher, einfach und ohne laufende Kosten</div>
+</header>
 
-    <!-- Header -->
-    <header>
-        <div class="top-badge" aria-hidden="true"><span>Software Made in Germany</span></div>
-        <h1>AI.-Ready<br>Windows Suite</h1>
-        <div class="brand-bar" aria-hidden="true"></div>
-        <p class="sub">6 portable Desktop-Tools im Cyberpunk-Design &mdash; kein Installer, kein Abo, kein Risiko. Einfach starten und arbeiten.</p>
-    </header>
+<!-- ═══════ VIDEO: WERBEVIDEO ═══════ -->
+<section>
+    <div class="section-title">Produkt-Vorstellung</div>
+    <div class="hero-video">
+        <video controls preload="metadata">
+            <source src="Videos/AI.-Ready Cloud Drive Produktdemo (V2 - Preisupdate)_1080p_caption.mp4" type="video/mp4">
+            Ihr Browser unterst&uuml;tzt kein Video.
+        </video>
+    </div>
 
-    <!-- Video -->
-    <section aria-label="Werbevideo">
-        <h2 class="sr-only">Werbevideo</h2>
-        <div class="video-wrap">
-            <video controls preload="metadata">
-                <source src="Videos/AI.-Ready Cloud Drive Produktdemo (V2 - Preisupdate)_1080p_caption.mp4" type="video/mp4">
-                Ihr Browser unterst&uuml;tzt kein Video.
-            </video>
+</section>
+
+<!-- ═══════ WARUM ═══════ -->
+<section>
+    <div class="section-title">Warum AI.-Ready Cloud Drive?</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:24px">
+        <div style="text-align:center;padding:20px">
+            <div style="font-size:36px;margin-bottom:8px">&#128274;</div>
+            <div style="font-size:14px;color:var(--neon);font-weight:700;margin-bottom:4px">Schluss mit Datenrisiken</div>
+            <div style="font-size:13px;color:var(--dim)">Herk&ouml;mmliche Dienste speichern Ihre Daten auf fremden Servern im Ausland und verursachen hohe laufende Kosten f&uuml;r Fernzugriff und Speicher.</div>
         </div>
-        <div class="video-wrap" style="margin-top:16px">
-            <video controls preload="metadata">
-                <source src="Videos/AI.mp4" type="video/mp4">
-                Ihr Browser unterst&uuml;tzt kein Video.
-            </video>
+        <div style="text-align:center;padding:20px">
+            <div style="font-size:36px;margin-bottom:8px">&#128187;</div>
+            <div style="font-size:14px;color:var(--neon);font-weight:700;margin-bottom:4px">100% Lokal auf Ihrem PC</div>
+            <div style="font-size:13px;color:var(--dim)">Ihre Daten verlassen niemals Ihren eigenen Rechner. Der Zugriff erfolgt direkt per Browser &mdash; DSGVO-konform, ohne Wenn und Aber.</div>
         </div>
-        <div class="audio-wrap">
-            <p>&#127911; <strong>Podcast:</strong> 750 Kilobyte beenden die teure Abo-Falle</p>
-            <audio controls preload="metadata">
-                <source src="Podcast/750_Kilobyte_beenden_die_teure_Abo-Falle.m4a" type="audio/mp4">
-                Ihr Browser unterst&uuml;tzt kein Audio.
-            </audio>
+        <div style="text-align:center;padding:20px">
+            <div style="font-size:36px;margin-bottom:8px">&#128230;</div>
+            <div style="font-size:14px;color:var(--neon);font-weight:700;margin-bottom:4px">Ultra-portabel: 750 KB EXE</div>
+            <div style="font-size:13px;color:var(--dim)">Keine Installation n&ouml;tig. Cloud, Fernzugriff und FLOW Board in einer Datei. Doppelklick und die Software l&auml;uft. Passt auf jeden USB-Stick.</div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- USP Cards -->
-    <section aria-label="Hauptvorteile">
-        <h2 class="sr-only">Hauptvorteile</h2>
-        <div class="usps" role="list">
-            <article class="usp" role="listitem">
-                <div role="img" aria-label="Rakete-Symbol">&#128640;</div>
-                <h3>100% Portabel</h3>
-                <p>Kein Installer, keine Registry. Direkt vom USB-Stick oder Desktop starten.</p>
-            </article>
-            <article class="usp" role="listitem">
-                <div role="img" aria-label="Schild-Symbol">&#128737;&#65039;</div>
-                <h3>Cyberpunk-Design</h3>
-                <p>Neon-Oberfl&auml;che, barrierefrei, responsive &mdash; Software die beeindruckt.</p>
-            </article>
-            <article class="usp" role="listitem">
-                <div role="img" aria-label="Geschenk-Symbol">&#127873;</div>
-                <h3>Individuelles Branding</h3>
-                <p>Jedes Tool mit Ihrem Firmenlogo und Namen. Ma&szlig;geschneidert f&uuml;r Sie.</p>
-            </article>
+<!-- ═══════ 6 VORTEILE ═══════ -->
+<section>
+    <div class="section-title">Die 6 gr&ouml;&szlig;ten Vorteile</div>
+    <div class="grid">
+        <div class="card">
+            <div class="card-icon">&#9889;</div>
+            <h3>Fernzugriff in nur 30 Sekunden</h3>
+            <p>Automatischer weltweiter Zugriff &uuml;ber verschl&uuml;sselten Cloudflare Tunnel &mdash; ohne Router-Konfiguration oder Port-Freigabe. Browser &ouml;ffnen, Adresse eingeben, fertig.</p>
         </div>
-    </section>
-
-    <!-- Features -->
-    <section aria-label="Funktionen">
-        <h2 class="sr-only">Alle Funktionen</h2>
-        <div class="features" role="list">
-            <div class="feat" role="listitem"><span>Cloud Drive &mdash; Private Cloud auf dem eigenen PC</span></div>
-            <div class="feat" role="listitem"><span>AI Converter &mdash; Universeller Dateikonverter</span></div>
-            <div class="feat" role="listitem"><span>AI Cleaner &mdash; System-Bereinigung &amp; Optimierung</span></div>
-            <div class="feat" role="listitem"><span>AI Explorer &mdash; Dual-Panel Dateimanager</span></div>
-            <div class="feat" role="listitem"><span>AI Rescue &mdash; USB-Datenrettung</span></div>
-            <div class="feat" role="listitem"><span>ZIP-Packer &mdash; Dateien komprimieren &amp; entpacken</span></div>
-            <div class="feat" role="listitem"><span>Alle Tools unter 200 KB &mdash; USB-Stick ready</span></div>
-            <div class="feat" role="listitem"><span>Windows 7/8/10/11 &mdash; keine Abh&auml;ngigkeiten</span></div>
+        <div class="card">
+            <div class="card-icon">&#128194;</div>
+            <h3>Alles in einem Programm</h3>
+            <p>Vereint Cloud-Tresor, Datei-Manager, Medien-Streaming (Video, Audio, PDF), FLOW Board und vollen PC-Systemzugriff in einer einzigen Oberfl&auml;che.</p>
         </div>
-    </section>
-
-    <!-- Cost Comparison -->
-    <section aria-label="Kostenvergleich">
-        <h2 class="sr-only">Kostenvergleich</h2>
-        <div class="compare">
-            <div class="compare-box compare-old">
-                <div class="price" aria-label="Herk&ouml;mmliche Kosten: 708 Euro pro Jahr">708 &euro; / Jahr</div>
-                <div class="label">WinRAR + TeamViewer + Dropbox</div>
-            </div>
-            <div class="compare-arrow" role="img" aria-label="wird ersetzt durch">&#10132;</div>
-            <div class="compare-box compare-new">
-                <div class="price" aria-label="Windows Suite: Null Euro Folgekosten">0 &euro; Folgekosten</div>
-                <div class="label">AI.-Ready Windows Suite</div>
-            </div>
+        <div class="card">
+            <div class="card-icon">&#128737;&#65039;</div>
+            <h3>Maximale Sicherheit: 12 Ebenen</h3>
+            <p>Von TLS 1.3 Verschl&uuml;sselung bis zum physischen Hardware-Schl&uuml;ssel &mdash; das System f&uuml;r den Umgang mit hochsensiblen Dokumenten.</p>
         </div>
-    </section>
-
-    <!-- QR + Contact -->
-    <footer class="bottom">
-        <div class="qr-box">
-            <img src="qr-code-gz-ai-stacks.png" alt="QR-Code: AI.-Ready Cloud Drive Werbeflyer" width="140" height="140">
-            <div class="qr-label">Cloud Drive ansehen</div>
+        <div class="card">
+            <div class="card-icon">&#127912;</div>
+            <h3>Custom Branding inklusive</h3>
+            <p>Jede Lizenz wird individuell erstellt &mdash; mit eigenem Namen und Logo im gesamten Web-Frontend. Ihre Software, Ihr Branding.</p>
         </div>
-        <address class="contact">
-            <div class="name">Gerd Zimmermann</div>
-            <div class="role">CEO &amp; Developer &mdash; GZ-AI.-Stacks</div>
-            <div class="info">
-                <span aria-label="E-Mail">&#128231;</span> <a href="mailto:gz.ai.stacks@gmail.com">gz.ai.stacks@gmail.com</a><br>
-                <span aria-label="Webseite">&#127760;</span> <a href="https://gz-ai-stacks.de">gz-ai-stacks.de</a>
-            </div>
-            <div class="url" aria-hidden="true">www.gz-ai-stacks.de</div>
-        </address>
-    </footer>
+        <div class="card">
+            <div class="card-icon">&#128176;</div>
+            <h3>Keine laufenden Kosten</h3>
+            <p>Einmal kaufen, f&uuml;r immer nutzen. Ersetzt TeamViewer und Dropbox und spart bereits nach einem Jahr &uuml;ber 700&euro;.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">&#9997;&#65039;</div>
+            <h3>FLOW Board &mdash; Digitales Whiteboard</h3>
+            <p>15 Zeichenwerkzeuge, Ebenen, Live-Share per QR-Code. Sch&uuml;ler scannen und zeichnen mit &mdash; direkt auf dem Handy. Ersetzt Miro, Jamboard &amp; Co.</p>
+        </div>
+    </div>
+</section>
 
-</main>
+<!-- ═══════ VIDEO 2 ═══════ -->
+<section>
+    <div class="hero-video">
+        <video controls preload="metadata">
+            <source src="Videos/AI.mp4" type="video/mp4">
+            Ihr Browser unterst&uuml;tzt kein Video.
+        </video>
+    </div>
+</section>
 
-<!-- ═══ SR-ONLY HELPER ═══ -->
-<style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}</style>
+<!-- ═══════ PODCAST ═══════ -->
+<section>
+    <div class="audio-section">
+        <h3>&#127911; 750 Kilobyte beenden die teure Abo-Falle</h3>
+        <p>Detaillierte Analyse &mdash; Cloud, Fernzugriff, FLOW Board vs. TeamViewer, Dropbox, Miro &amp; Co.</p>
+        <canvas id="audio-vis-canvas"></canvas>
+        <audio id="podcast-audio" controls preload="metadata" style="width:100%;max-width:600px;border-radius:8px">
+            <source src="Podcast/750_Kilobyte_beenden_die_teure_Abo-Falle.m4a" type="audio/mp4">
+            Ihr Browser unterst&uuml;tzt kein Audio.
+        </audio>
+    </div>
+</section>
 
-<!-- ═══════ SCRIPTS ═══════ -->
+<!-- ═══════ SICHERHEIT ═══════ -->
+<section>
+    <div class="section-title">Sicherheits-Highlights</div>
+    <div class="security-grid">
+        <div class="sec-item">
+            <div class="sec-icon">&#128273;</div>
+            <h4>USB Master Key &amp; Kill-Switch</h4>
+            <p>Physischer USB-Stick als Schl&uuml;ssel. Stick ziehen = Server stoppt in 3 Sekunden.</p>
+        </div>
+        <div class="sec-item">
+            <div class="sec-icon">&#128680;</div>
+            <h4>Remote Notfall-Button</h4>
+            <p>PC vom Handy aus sofort sperren. Doppelte Best&auml;tigung verhindert Fehlausl&ouml;sung.</p>
+        </div>
+        <div class="sec-item">
+            <div class="sec-icon">&#128241;</div>
+            <h4>Zwei-Faktor-Authentifizierung</h4>
+            <p>Google Authenticator kompatibel. 6-stelliger Code &auml;ndert sich alle 30 Sekunden.</p>
+        </div>
+        <div class="sec-item">
+            <div class="sec-icon">&#128272;</div>
+            <h4>AES-256 / TLS 1.3</h4>
+            <p>Milit&auml;rischer Verschl&uuml;sselungsstandard f&uuml;r alle Verbindungen. Audit-Log protokolliert jeden Zugriff.</p>
+        </div>
+        <div class="sec-item">
+            <div class="sec-icon">&#9729;&#65039;</div>
+            <h4>Cloudflare Tunnel</h4>
+            <p>Verschl&uuml;sselter Tunnel ohne offene Ports. Kein Portforwarding, keine Angriffs&shy;fl&auml;che &mdash; maximale Netzwerksicherheit.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════ KOSTENVERGLEICH ═══════ -->
+<section>
+    <div class="section-title">Der Kostenvergleich</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+        <table class="cost-table">
+            <thead>
+                <tr>
+                    <th>Dienstleistung</th>
+                    <th>Herk&ouml;mmlich</th>
+                    <th>AI.-Ready Cloud Drive</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Fernzugriff (z.B. TeamViewer)</td>
+                    <td class="price-old">588 &euro; / Jahr</td>
+                    <td class="price-new" rowspan="3" style="vertical-align:middle;font-size:18px">Einmalige Anschaffung</td>
+                </tr>
+                <tr>
+                    <td>Cloud-Speicher (z.B. Dropbox)</td>
+                    <td class="price-old">120 &euro; / Jahr</td>
+                </tr>
+                <tr>
+                    <td>Whiteboard (z.B. Miro)</td>
+                    <td class="price-old">96 &euro; / Jahr</td>
+                </tr>
+                <tr class="cost-total">
+                    <td>Gesamtkosten pro Jahr</td>
+                    <td class="price-old">804 &euro;</td>
+                    <td class="price-new">0 &euro; ab Jahr 2</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+        <span class="save-badge">Ersparnis nach 3 Jahren: &uuml;ber 2.000 &euro;</span>
+    </div>
+</section>
+
+<!-- ═══════ BILD: REVOLUTION ═══════ -->
+<section>
+    <div class="section-title">Revolution im Klassenzimmer</div>
+    <div class="infographic" onclick="var i=this.querySelector('img');var o=document.getElementById('img-overlay');if(o){o.remove();return;}o=document.createElement('div');o.id='img-overlay';o.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:20px';var c=i.cloneNode();c.style.cssText='max-width:95vw;max-height:95vh;border-radius:12px;box-shadow:0 0 60px rgba(0,255,170,.2)';o.appendChild(c);o.onclick=function(){o.remove()};document.body.appendChild(o)">
+        <img src="Bilder/Private Cloud ohne Abo Kosten.png" alt="Private Cloud ohne Abo Kosten" loading="lazy">
+    </div>
+</section>
+
+<!-- ═══════ FLOW Board Live-Share Demo ═══════ -->
+<section>
+    <div class="section-title">FLOW Board &mdash; Live-Share im Unterricht</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:24px">
+        <div style="text-align:center;padding:20px">
+            <div style="font-size:36px;margin-bottom:8px">&#9997;&#65039;</div>
+            <div style="font-size:14px;color:var(--cyan);font-weight:700;margin-bottom:4px">15+ Zeichenwerkzeuge</div>
+            <div style="font-size:13px;color:var(--dim)">Stift, Pinsel, Spray, Formen, Radierer, F&uuml;ll-Eimer, Pipette, Lasso, Laser-Pointer und mehr.</div>
+        </div>
+        <div style="text-align:center;padding:20px">
+            <div style="font-size:36px;margin-bottom:8px">&#128225;</div>
+            <div style="font-size:14px;color:var(--cyan);font-weight:700;margin-bottom:4px">Live-Share per QR-Code</div>
+            <div style="font-size:13px;color:var(--dim)">Sch&uuml;ler scannen den QR-Code und sehen das Board in Echtzeit auf dem Handy &mdash; weltweit &uuml;ber Cloudflare Tunnel.</div>
+        </div>
+        <div style="text-align:center;padding:20px">
+            <div style="font-size:36px;margin-bottom:8px">&#128396;</div>
+            <div style="font-size:14px;color:var(--cyan);font-weight:700;margin-bottom:4px">Sch&uuml;ler zeichnen mit</div>
+            <div style="font-size:13px;color:var(--dim)">Der Lehrer schaltet die Zeichenfunktion frei &mdash; Stift, Radierer, 6 Farben direkt auf dem Handy. Keine App n&ouml;tig.</div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- ═══════ TECH SPECS ═══════ -->
+<section>
+    <div class="section-title">Technische Spezifikationen</div>
+    <div class="specs-grid">
+        <div class="spec">
+            <div class="spec-val">750 KB</div>
+            <div class="spec-label">Dateigr&ouml;&szlig;e</div>
+        </div>
+        <div class="spec">
+            <div class="spec-val">11.000+</div>
+            <div class="spec-label">Zeilen Code</div>
+        </div>
+        <div class="spec">
+            <div class="spec-val">24</div>
+            <div class="spec-label">API-Endpunkte</div>
+        </div>
+        <div class="spec">
+            <div class="spec-val">200+</div>
+            <div class="spec-label">Funktionen</div>
+        </div>
+        <div class="spec">
+            <div class="spec-val">12</div>
+            <div class="spec-label">Sicherheitsebenen</div>
+        </div>
+        <div class="spec">
+            <div class="spec-val">0</div>
+            <div class="spec-label">Externe Abh&auml;ngigkeiten</div>
+        </div>
+        <div class="spec">
+            <div class="spec-val">TLS 1.3</div>
+            <div class="spec-label">Verschl&uuml;sselung</div>
+        </div>
+        <div class="spec">
+            <div class="spec-val">Cloudflare</div>
+            <div class="spec-label">Tunnel-Zugang</div>
+        </div>
+    </div>
+    <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="spec" style="text-align:left;padding:20px">
+            <div style="font-size:13px;color:var(--neon);font-weight:700;margin-bottom:8px">Unterst&uuml;tzte Medien-Formate</div>
+            <div style="font-size:13px;color:var(--dim)">Video: MP4, WebM, MOV<br>Audio: MP3, WAV, OGG, FLAC<br>Bilder: PNG, JPG, GIF, WebP, SVG<br>Dokumente: PDF</div>
+        </div>
+        <div class="spec" style="text-align:left;padding:20px">
+            <div style="font-size:13px;color:var(--neon);font-weight:700;margin-bottom:8px">Systemanforderungen</div>
+            <div style="font-size:13px;color:var(--dim)">Windows 7/8/10/11<br>.NET Framework 4.0+<br>512 MB RAM (empfohlen: 2 GB)<br>Jeder moderne Browser</div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<!-- ═══════ CTA ═══════ -->
+<section class="cta">
+    <div class="cta-box">
+        <h2>Interesse geweckt?</h2>
+        <p>Kontaktieren Sie uns f&uuml;r eine pers&ouml;nliche Beratung oder eine Live-Demo.<br>Besuchen Sie uns auf <a href="https://gz-ai-stacks.de" target="_blank" rel="noopener" style="color:var(--neon);text-decoration:none;font-weight:600">gz-ai-stacks.de</a></p>
+        <a href="https://gz-ai-stacks.de/cloud-drive" target="_blank" rel="noopener" class="cta-mail">&#127760; Zur Produktseite</a>
+        <div style="margin-top:28px">
+            <img src="Bilder/QR-Code_gz-ai-stacks.de_cloud-drive.png" alt="QR-Code gz-ai-stacks.de/cloud-drive" width="140" height="140" style="border-radius:12px;border:1px solid var(--border)">
+            <div style="margin-top:8px;font-size:11px;color:var(--dim);letter-spacing:1px">www.gz-ai-stacks.de</div>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+    <div class="container">
+        <span class="brand-sm">GZ-AI.-Stacks</span> &mdash; Gerd Zimmermann<br>
+        &copy; 2026 Alle Rechte vorbehalten<br>
+        <a href="https://gz-ai-stacks.de/impressum" target="_blank" rel="noopener">Impressum</a> &middot;
+        <a href="https://gz-ai-stacks.de/datenschutz" target="_blank" rel="noopener">Datenschutz</a>
+    </div>
+</footer>
+
+<!-- ═══════ MATRIX RAIN ═══════ -->
 <script>
-/* ═══ SERVICE WORKER ═══ */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){})}
-
-/* ═══ BOOT ANIMATION ═══ */
 (function(){
-    var boot=document.getElementById('boot-screen');
-    var lines=document.querySelectorAll('#boot-lines div');
-    var bar=document.getElementById('boot-progress-bar');
-    var prog=document.getElementById('boot-progress');
-    var brand=document.getElementById('boot-brand');
-    var flyer=document.querySelector('.flyer');
-    var mc=document.getElementById('boot-matrix');
-
-    // Boot matrix
-    var bctx=mc.getContext('2d');
-    mc.width=window.innerWidth;mc.height=window.innerHeight;
-    var bcols=Math.floor(mc.width/16),bdrops=[];
-    for(var i=0;i<bcols;i++)bdrops[i]=Math.random()*mc.height/16;
-    var bchars='01GZAISTACKSBOOT';
-    var bint=setInterval(function(){
-        bctx.fillStyle='rgba(6,8,20,.07)';bctx.fillRect(0,0,mc.width,mc.height);
-        bctx.fillStyle='#00FFAA';bctx.font='13px monospace';
-        for(var i=0;i<bdrops.length;i++){
-            bctx.fillText(bchars[Math.floor(Math.random()*bchars.length)],i*16,bdrops[i]*16);
-            if(bdrops[i]*16>mc.height&&Math.random()>.975)bdrops[i]=0;
-            bdrops[i]++;
-        }
-    },50);
-
-    var delay=0;
-    lines.forEach(function(line,idx){
-        delay+=350+Math.random()*200;
-        setTimeout(function(){
-            line.classList.add('show');
-            var pct=Math.min(100,Math.round((idx+1)/lines.length*90));
-            bar.style.width=pct+'%';
-            prog.setAttribute('aria-valuenow',pct);
-        },delay);
-    });
-
-    setTimeout(function(){
-        bar.style.width='100%';prog.setAttribute('aria-valuenow','100');
-        brand.style.opacity='1';
-    },delay+400);
-
-    setTimeout(function(){
-        boot.classList.add('fade-out');
-        flyer.classList.add('visible');
-        setTimeout(function(){boot.style.display='none';clearInterval(bint)},800);
-    },delay+1400);
-})();
-
-/* ═══ MATRIX RAIN ═══ */
-(function(){
-    var c=document.getElementById('matrix'),x=c.getContext('2d');
-    function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
-    resize();window.addEventListener('resize',resize);
-    var cols=Math.floor(c.width/16),drops=[];
-    for(var i=0;i<cols;i++)drops[i]=Math.random()*c.height/16;
-    var chars='01AICLOUDDRIVEREADY';
+    var c=document.getElementById('matrix-bg'),x=c.getContext('2d');
+    c.width=window.innerWidth;c.height=window.innerHeight;
+    var cols=Math.floor(c.width/18),drops=[];
+    for(var i=0;i<cols;i++)drops[i]=Math.random()*c.height/18;
+    var chars='01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
     function draw(){
         x.fillStyle='rgba(6,8,20,.06)';x.fillRect(0,0,c.width,c.height);
-        x.fillStyle='#00FFAA';x.font='13px monospace';
+        x.fillStyle='#00FFAA';x.font='14px monospace';
         for(var i=0;i<drops.length;i++){
-            x.fillText(chars[Math.floor(Math.random()*chars.length)],i*16,drops[i]*16);
-            if(drops[i]*16>c.height&&Math.random()>.975)drops[i]=0;
+            var t=chars[Math.floor(Math.random()*chars.length)];
+            x.fillText(t,i*18,drops[i]*18);
+            if(drops[i]*18>c.height&&Math.random()>.975)drops[i]=0;
             drops[i]++;
         }
     }
-    setInterval(draw,55);
+    setInterval(draw,50);
+    window.addEventListener('resize',function(){c.width=window.innerWidth;c.height=window.innerHeight});
 })();
+</script>
 
-/* ═══ ZOOM ═══ */
+<!-- ═══════ AUDIO VISUALIZER — voice-reactive, no createMediaElementSource ═══════ -->
+<script>
 (function(){
-    var size=100;
-    document.getElementById('zoom-in').addEventListener('click',function(){
-        size=Math.min(160,size+10);
-        document.documentElement.style.fontSize=size+'%';
-        this.setAttribute('aria-label','Text vergr\u00f6\u00dfern (aktuell '+size+'%)');
-    });
-    document.getElementById('zoom-out').addEventListener('click',function(){
-        size=Math.max(60,size-10);
-        document.documentElement.style.fontSize=size+'%';
-        this.setAttribute('aria-label','Text verkleinern (aktuell '+size+'%)');
-    });
-})();
+    var audio=document.getElementById('podcast-audio');
+    var canvas=document.getElementById('audio-vis-canvas');
+    var ctx=canvas.getContext('2d');
+    var t=0,playing=false,lastTime=0;
+    var NUM=80;
+    var bars=new Float32Array(NUM),peaks=new Float32Array(NUM),wave=new Float32Array(128);
+    var particles=[],rings=[],sparks=[],hexagons=[];
+    var energy=0,bass=0,mid=0,high=0,vol=0,volSmooth=0;
 
-/* ═══ THEME TOGGLE ═══ */
-(function(){
-    var btn=document.getElementById('theme-toggle');
-    var html=document.documentElement;
-    // Check system preference
-    if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches){
-        html.setAttribute('data-theme','light');
-        btn.textContent='\u2600';
+    // Try real analyser via XHR buffer (no createMediaElementSource!)
+    var actx,analyser,silentSrc,audioBuf,bufStart=0,freqData,waveData,live=false;
+
+    function resize(){canvas.width=canvas.offsetWidth*2;canvas.height=canvas.offsetHeight*2}
+    resize();window.addEventListener('resize',resize);
+
+    for(var i=0;i<100;i++) particles.push({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.003,vy:(Math.random()-.5)*.003,r:Math.random()*3+.5,hue:140+Math.random()*80,a:Math.random()*.3+.1,orbit:Math.random()*Math.PI*2,orbitR:.15+Math.random()*.25,orbitSpeed:.2+Math.random()*.5});
+
+    function initAnalyser(){
+        if(live)return;
+        try{
+            actx=new(window.AudioContext||window.webkitAudioContext)();
+            analyser=actx.createAnalyser();analyser.fftSize=256;analyser.smoothingTimeConstant=0.8;
+            freqData=new Uint8Array(analyser.frequencyBinCount);waveData=new Uint8Array(analyser.fftSize);
+            var xhr=new XMLHttpRequest();
+            xhr.open('GET','Podcast/750_Kilobyte_beenden_die_teure_Abo-Falle.m4a',true);
+            xhr.responseType='arraybuffer';
+            xhr.onload=function(){actx.decodeAudioData(xhr.response,function(d){audioBuf=d;live=true},function(){})};
+            xhr.onerror=function(){};xhr.send();
+        }catch(e){}
     }
-    btn.addEventListener('click',function(){
-        var isDark=html.getAttribute('data-theme')==='dark';
-        html.setAttribute('data-theme',isDark?'light':'dark');
-        btn.textContent=isDark?'\u2600':'\u263D';
-        btn.setAttribute('aria-label',isDark?'Zum Dunkelmodus wechseln':'Zum Hellmodus wechseln');
+    function startSilent(){stopSilent();if(!live||!audioBuf)return;silentSrc=actx.createBufferSource();silentSrc.buffer=audioBuf;silentSrc.connect(analyser);silentSrc.start(0,audio.currentTime||0);bufStart=actx.currentTime-(audio.currentTime||0)}
+    function stopSilent(){if(silentSrc){try{silentSrc.stop()}catch(e){}silentSrc=null}}
+    var syncI;function startSync(){syncI=setInterval(function(){if(!playing||!live)return;if(Math.abs((actx.currentTime-bufStart)-audio.currentTime)>.3)startSilent()},1500)}
+
+    // Voice-like simulation when real analyser fails
+    function simulate(){
+        var at=audio.currentTime||0;
+        // Multiple oscillators at speech frequencies
+        var f1=Math.sin(at*5.3)*.35+Math.sin(at*11.7)*.2+Math.sin(at*2.1)*.15;
+        var f2=Math.sin(at*8.9)*.25+Math.sin(at*17.3)*.15+Math.sin(at*3.7)*.2;
+        var f3=Math.sin(at*13.1)*.2+Math.sin(at*23.7)*.1;
+        // Plosive bursts (simulates p/t/k sounds)
+        var burst=Math.sin(at*37)*.3*Math.max(0,Math.sin(at*2.3));
+        // Breathing rhythm
+        var breath=.6+.4*Math.sin(at*.8);
+
+        for(var i=0;i<NUM;i++){
+            var freq=i/NUM;
+            var target;
+            if(freq<.15) target=Math.abs(f1+burst)*breath*1.2+Math.random()*.08; // bass
+            else if(freq<.4) target=Math.abs(f1*.6+f2*.8)*breath+Math.random()*.06; // low-mid (voice fundamental)
+            else if(freq<.65) target=Math.abs(f2*.5+f3*.7)*breath*.8+Math.random()*.05; // high-mid (voice harmonics)
+            else target=Math.abs(f3)*breath*.4+Math.random()*.03; // highs (sibilants)
+            bars[i]+=(target-bars[i])*.18;
+        }
+    }
+
+    function updateData(){
+        if(live&&playing&&analyser){
+            analyser.getByteFrequencyData(freqData);analyser.getByteTimeDomainData(waveData);
+            for(var i=0;i<NUM;i++){var fi=Math.floor(i/NUM*freqData.length);bars[i]+=(freqData[fi]/255-bars[i])*.25}
+            for(var i=0;i<128;i++) wave[i]=(waveData[i%waveData.length]-128)/128;
+        }else if(playing){
+            simulate();
+            for(var i=0;i<128;i++){var angle=t*3+i*.15;wave[i]=Math.sin(angle)*.3*bars[Math.floor(i/128*NUM)]}
+        }else{
+            for(var i=0;i<NUM;i++) bars[i]*=.93;
+            for(var i=0;i<128;i++) wave[i]*=.93;
+        }
+        bass=0;mid=0;high=0;
+        for(var i=0;i<NUM;i++){
+            if(i<NUM*.15)bass+=bars[i];else if(i<NUM*.5)mid+=bars[i];else high+=bars[i];
+        }
+        bass/=(NUM*.15);mid/=(NUM*.35);high/=(NUM*.5);
+        energy=bass*.4+mid*.35+high*.25;
+        volSmooth+=(energy-volSmooth)*.1;
+    }
+
+    function draw(){
+        var w=canvas.width,h=canvas.height,cx=w/2,cy=h/2;
+        var dt=0.016;t+=dt;
+        updateData();
+
+        // === BACKGROUND ===
+        ctx.fillStyle='rgba(6,8,20,'+(playing?.18:.25)+')';ctx.fillRect(0,0,w,h);
+
+        // Center glow
+        var gs=playing?150+energy*500:60+Math.sin(t*.5)*15;
+        var grd=ctx.createRadialGradient(cx,cy,0,cx,cy,gs);
+        grd.addColorStop(0,'rgba(0,255,170,'+(playing?.05+energy*.25:.02)+')');
+        grd.addColorStop(.4,'rgba(0,180,255,'+(playing?.03+bass*.15:.01)+')');
+        grd.addColorStop(.7,'rgba(140,0,255,'+(playing?.01+high*.08:0)+')');
+        grd.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=grd;ctx.fillRect(0,0,w,h);
+
+        // === NEBULA CLOUDS ===
+        if(playing){
+            for(var nc=0;nc<3;nc++){
+                var na=t*.2+nc*2.1,nr=200+energy*300;
+                var nx=cx+Math.cos(na)*nr*.3,ny=cy+Math.sin(na)*nr*.2;
+                var ng=ctx.createRadialGradient(nx,ny,0,nx,ny,80+energy*120);
+                var nh=[150,190,270][nc];
+                ng.addColorStop(0,'hsla('+nh+',100%,60%,'+(energy*.06)+')');
+                ng.addColorStop(1,'rgba(0,0,0,0)');
+                ctx.fillStyle=ng;ctx.fillRect(0,0,w,h);
+            }
+        }
+
+        // === CIRCULAR FREQUENCY BARS ===
+        var radius=Math.min(w,h)*.26;
+        ctx.save();ctx.translate(cx,cy);
+        for(var i=0;i<NUM;i++){
+            var angle=(i/NUM)*Math.PI*2-Math.PI/2;
+            var val=bars[i];
+            if(val>peaks[i])peaks[i]=val;else peaks[i]*=.96;
+            var barH=radius*(playing?.08+val*1.1:.05);
+            var inner=radius*.52;
+            ctx.save();ctx.rotate(angle);
+            var hue=140+val*90+(i/NUM)*30;
+            // Bar gradient
+            var bg2=ctx.createLinearGradient(0,inner,0,inner+barH);
+            bg2.addColorStop(0,'hsla('+hue+',100%,60%,'+(playing?.5+val*.5:.1)+')');
+            bg2.addColorStop(.6,'hsla('+(hue+20)+',100%,55%,'+(playing?.3+val*.4:.05)+')');
+            bg2.addColorStop(1,'hsla('+(hue+40)+',100%,50%,0)');
+            ctx.fillStyle=bg2;
+            var bw=Math.max(2.5,Math.PI*2*inner/NUM*.7);
+            ctx.fillRect(-bw/2,inner,bw,barH);
+            // Glow on loud bars
+            if(val>.4&&playing){ctx.shadowColor='hsla('+hue+',100%,60%,.8)';ctx.shadowBlur=18;ctx.fillRect(-bw/2,inner,bw,barH);ctx.shadowBlur=0}
+            // Peak dots
+            if(playing&&peaks[i]>.15){ctx.beginPath();ctx.arc(0,inner+radius*(.08+peaks[i]*1.1)+8,3,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+(peaks[i]*.9)+')';ctx.fill()}
+            // Mirror bars (inner)
+            if(playing&&val>.1){
+                var mirH=barH*.3;
+                var mg=ctx.createLinearGradient(0,inner-mirH,0,inner);
+                mg.addColorStop(0,'hsla('+hue+',100%,60%,0)');
+                mg.addColorStop(1,'hsla('+hue+',100%,60%,'+(val*.2)+')');
+                ctx.fillStyle=mg;ctx.fillRect(-bw/2,inner-mirH,bw,mirH);
+            }
+            ctx.restore();
+        }
+
+        // Inner pulsing rings
+        for(var ri=0;ri<3;ri++){
+            var rr=radius*(.35+ri*.08)*(1+(playing?bass*.08:Math.sin(t+ri)*.02));
+            ctx.beginPath();ctx.arc(0,0,rr,0,Math.PI*2);
+            var rc=['rgba(0,255,170,','rgba(0,180,255,','rgba(140,0,255,'][ri];
+            ctx.strokeStyle=rc+(0.1+(playing?energy*.3:.03))+')';
+            ctx.lineWidth=1.5-ri*.3;ctx.stroke();
+        }
+
+        // Rotating hexagon frame
+        if(playing){
+            ctx.save();ctx.rotate(t*.15);
+            ctx.beginPath();
+            for(var hi=0;hi<6;hi++){var ha=hi/6*Math.PI*2;var hr=radius*.48+bass*20;if(hi===0)ctx.moveTo(Math.cos(ha)*hr,Math.sin(ha)*hr);else ctx.lineTo(Math.cos(ha)*hr,Math.sin(ha)*hr)}
+            ctx.closePath();ctx.strokeStyle='rgba(0,255,170,'+(0.08+energy*.15)+')';ctx.lineWidth=1.5;ctx.stroke();
+            ctx.restore();
+        }
+        ctx.restore();
+
+        // === WAVEFORM CIRCLE ===
+        if(playing){
+            ctx.save();ctx.translate(cx,cy);ctx.beginPath();
+            var wr=radius*.38;
+            for(var wi=0;wi<128;wi++){
+                var wa=(wi/128)*Math.PI*2-Math.PI/2;
+                var wv=wave[wi];
+                var r2=wr+wv*wr*.7;
+                if(wi===0)ctx.moveTo(Math.cos(wa)*r2,Math.sin(wa)*r2);else ctx.lineTo(Math.cos(wa)*r2,Math.sin(wa)*r2);
+            }
+            ctx.closePath();
+            ctx.strokeStyle='rgba(0,255,170,'+(0.3+energy*.5)+')';ctx.lineWidth=2;
+            ctx.shadowColor='rgba(0,255,170,.6)';ctx.shadowBlur=15;ctx.stroke();ctx.shadowBlur=0;
+            ctx.fillStyle='rgba(0,255,170,'+(0.01+energy*.06)+')';ctx.fill();
+            ctx.restore();
+        }
+
+        // === LINEAR WAVEFORMS (dual) ===
+        var wy1=h*.82,wy2=h*.82;
+        ctx.beginPath();
+        for(var lx=0;lx<w;lx+=2){var li=Math.floor(lx/w*128);var lv=wave[li];if(lx===0)ctx.moveTo(lx,wy1+lv*(playing?50:6));else ctx.lineTo(lx,wy1+lv*(playing?50:6))}
+        ctx.strokeStyle='rgba(0,255,170,'+(playing?.35+energy*.4:.06)+')';ctx.lineWidth=playing?2:1;ctx.stroke();
+        ctx.beginPath();
+        for(var mx=0;mx<w;mx+=2){var mi=Math.floor(mx/w*128);var mv=wave[mi];if(mx===0)ctx.moveTo(mx,wy2-mv*(playing?50:6));else ctx.lineTo(mx,wy2-mv*(playing?50:6))}
+        ctx.strokeStyle='rgba(0,180,255,'+(playing?.2+energy*.25:.04)+')';ctx.lineWidth=playing?1.5:1;ctx.stroke();
+
+        // === EQ BARS BOTTOM ===
+        var eqN=96,eqW=w/eqN-1;
+        for(var e=0;e<eqN;e++){
+            var ei=Math.floor(e/eqN*NUM);var ev=bars[ei];
+            var eh=playing?3+ev*h*.2:1.5+Math.sin(t*.3+e*.1)*.5;
+            var eH=140+ev*80+(e/eqN)*40;
+            ctx.fillStyle='hsla('+eH+',100%,55%,'+(playing?.4+ev*.5:.05)+')';
+            ctx.fillRect(e*(eqW+1),h-eh,eqW,eh);
+            // Reflection
+            if(playing&&ev>.15){ctx.fillStyle='hsla('+eH+',100%,55%,'+(ev*.12)+')';ctx.fillRect(e*(eqW+1),h,eqW,eh*.3)}
+        }
+
+        // === PARTICLES ===
+        for(var p=0;p<particles.length;p++){
+            var pt=particles[p],sp=playing?1+energy*4:.2;
+            if(playing&&energy>.2){
+                // Orbit around center when music plays
+                pt.orbit+=pt.orbitSpeed*dt*sp;
+                var ox=.5+Math.cos(pt.orbit)*pt.orbitR*(1+bass*.5);
+                var oy=.5+Math.sin(pt.orbit)*pt.orbitR*(1+mid*.5);
+                pt.x+=(ox-pt.x)*.02;pt.y+=(oy-pt.y)*.02;
+            }else{
+                pt.x+=pt.vx*sp;pt.y+=pt.vy*sp;
+            }
+            if(pt.x<0||pt.x>1)pt.vx*=-1;if(pt.y<0||pt.y>1)pt.vy*=-1;
+            pt.x=Math.max(0,Math.min(1,pt.x));pt.y=Math.max(0,Math.min(1,pt.y));
+            var pSize=pt.r*(playing?1+energy*3:1);
+            var pAlpha=playing?pt.a*(1+energy*3):pt.a*.25;
+            ctx.beginPath();ctx.arc(pt.x*w,pt.y*h,pSize,0,Math.PI*2);
+            ctx.fillStyle='hsla('+pt.hue+',100%,65%,'+pAlpha+')';ctx.fill();
+            if(playing&&energy>.3){ctx.shadowColor='hsla('+pt.hue+',100%,60%,.5)';ctx.shadowBlur=10+energy*15;ctx.fill();ctx.shadowBlur=0}
+        }
+
+        // === CONNECTING LINES between nearby particles ===
+        if(playing&&energy>.15){
+            for(var i=0;i<particles.length;i++){
+                for(var j=i+1;j<Math.min(i+8,particles.length);j++){
+                    var dx=(particles[i].x-particles[j].x)*w,dy=(particles[i].y-particles[j].y)*h;
+                    var d=Math.sqrt(dx*dx+dy*dy);
+                    if(d<120+energy*80){
+                        ctx.beginPath();ctx.moveTo(particles[i].x*w,particles[i].y*h);ctx.lineTo(particles[j].x*w,particles[j].y*h);
+                        ctx.strokeStyle='rgba(0,255,170,'+((.15-d/(120+energy*80)*.15)*energy*2)+')';ctx.lineWidth=.8;ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // === BASS EXPLOSION RINGS ===
+        if(playing&&bass>.35&&Math.random()>.5)rings.push({r:0,a:.6+bass*.4,sp:4+bass*8,hue:140+Math.random()*50,w:2+bass*3});
+        for(var ri=rings.length-1;ri>=0;ri--){var rn=rings[ri];rn.r+=rn.sp;rn.a-=.012;rn.w*=.98;if(rn.a<=0){rings.splice(ri,1);continue}ctx.beginPath();ctx.arc(cx,cy,rn.r,0,Math.PI*2);ctx.strokeStyle='hsla('+rn.hue+',100%,60%,'+rn.a+')';ctx.lineWidth=rn.w;ctx.stroke()}
+
+        // === SPARKS on voice peaks ===
+        if(playing&&energy>.4&&Math.random()>.6){
+            var sa=Math.random()*Math.PI*2;var sr=radius*.55+bars[Math.floor(Math.random()*NUM)]*radius;
+            sparks.push({x:cx+Math.cos(sa)*sr,y:cy+Math.sin(sa)*sr,vx:Math.cos(sa)*3,vy:Math.sin(sa)*3,life:1,hue:150+Math.random()*60});
+        }
+        for(var si=sparks.length-1;si>=0;si--){
+            var sk=sparks[si];sk.x+=sk.vx;sk.y+=sk.vy;sk.life-=.025;sk.vy+=.1;
+            if(sk.life<=0){sparks.splice(si,1);continue}
+            ctx.beginPath();ctx.arc(sk.x,sk.y,2*sk.life,0,Math.PI*2);
+            ctx.fillStyle='hsla('+sk.hue+',100%,70%,'+sk.life+')';ctx.fill();
+        }
+
+        // === CENTER CONTENT ===
+        if(!playing){
+            ctx.fillStyle='rgba(0,255,170,.25)';ctx.font='bold '+(h*.06)+'px "Segoe UI",sans-serif';ctx.textAlign='center';
+            ctx.fillText('\u25B6  PLAY',cx,cy-h*.01);
+            ctx.font=(h*.022)+'px "Segoe UI",sans-serif';ctx.fillStyle='rgba(100,120,150,.5)';
+            ctx.fillText('750 KB gegen milliardenschwere Cloud-Giganten',cx,cy+h*.04);
+        }else{
+            // Pulsing center dot
+            var cd=4+energy*8;
+            ctx.beginPath();ctx.arc(cx,cy,cd,0,Math.PI*2);
+            ctx.fillStyle='rgba(0,255,170,'+(0.3+energy*.5)+')';ctx.shadowColor='rgba(0,255,170,.8)';ctx.shadowBlur=20+energy*30;ctx.fill();ctx.shadowBlur=0;
+        }
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+
+    canvas.addEventListener('click',function(){if(audio.paused)audio.play();else audio.pause()});
+    audio.addEventListener('play',function(){
+        playing=true;initAnalyser();
+        if(actx&&actx.state==='suspended')actx.resume().then(function(){startSilent();startSync()});
+        else if(live){startSilent();startSync()}
+        if(!live){var r=setInterval(function(){if(live&&playing){startSilent();startSync();clearInterval(r)}},300)}
+    });
+    audio.addEventListener('pause',function(){playing=false;stopSilent();clearInterval(syncI)});
+    audio.addEventListener('ended',function(){playing=false;stopSilent();clearInterval(syncI);rings=[];sparks=[]});
+    audio.addEventListener('seeked',function(){if(playing&&live)startSilent()});
+})();
+</script>
+
+<!-- ═══════ BOOT SEQUENCE + MATRIX RAIN ═══════ -->
+<script>
+(function(){
+    // Matrix rain on splash background
+    var sc=document.getElementById('splash-matrix'),sx=sc.getContext('2d');
+    sc.width=window.innerWidth;sc.height=window.innerHeight;
+    var cols=Math.floor(sc.width/18),dr=[];
+    for(var i=0;i<cols;i++)dr[i]=Math.random()*sc.height/18;
+    var ch='01アイウエオカキクケコサシスセソタチツテトクラウドドライブ';
+    function drawMatrix(){
+        sx.fillStyle='rgba(6,8,20,.07)';sx.fillRect(0,0,sc.width,sc.height);
+        sx.fillStyle='#00FFAA';sx.font='14px monospace';
+        for(var i=0;i<dr.length;i++){
+            var t=ch[Math.floor(Math.random()*ch.length)];
+            sx.fillText(t,i*18,dr[i]*18);
+            if(dr[i]*18>sc.height&&Math.random()>.975)dr[i]=0;
+            dr[i]++;
+        }
+    }
+    var si=setInterval(drawMatrix,50);
+    window.addEventListener('resize',function(){sc.width=window.innerWidth;sc.height=window.innerHeight});
+
+    // Boot sequence: reveal lines one by one
+    var lines=document.querySelectorAll('#boot-lines div');
+    var bar=document.getElementById('boot-bar-fill');
+    var status=document.getElementById('boot-status');
+    var total=lines.length;
+    var delay=250; // ms between lines
+
+    lines.forEach(function(line,i){
+        setTimeout(function(){
+            line.classList.add('show');
+            bar.style.width=Math.round(((i+1)/total)*100)+'%';
+            if(i===total-1){
+                status.textContent='Bereit.';
+                status.style.color='#00FFAA';
+                // Fade out after last line
+                setTimeout(function(){
+                    document.getElementById('splash').classList.add('fade-out');
+                    setTimeout(function(){
+                        document.getElementById('splash').remove();
+                        clearInterval(si);
+                    },800);
+                },600);
+            }
+        },(i+1)*delay);
     });
 })();
 </script>
